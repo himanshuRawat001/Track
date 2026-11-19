@@ -1,0 +1,157 @@
+<%- include('../partials/head') %>
+<%- include('../partials/workspace-shell-start') %>
+
+<div class="space-y-6">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+    <div>
+      <p class="text-xs font-medium text-blue-400">Roster Administration</p>
+      <h1 class="font-display text-4xl font-bold text-white mt-1">Manage Students</h1>
+      <p class="text-sm text-slate-300 mt-1">Add new student-athletes, update academic/varsity records, or remove inactive profiles.</p>
+    </div>
+    <button type="button" data-open-student-modal="create" class="rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors whitespace-nowrap min-h-[40px] self-start sm:self-auto">
+      + Add Student-Athlete
+    </button>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="w-full sm:w-80">
+      <label for="admin-student-search" class="sr-only">Search students</label>
+      <input id="admin-student-search" type="search" placeholder="Search name, department, or code..." class="w-full rounded-lg border border-slate-400/20 bg-[#0B1324] px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500" />
+    </div>
+    <div class="flex items-center gap-3">
+      <label for="admin-student-sport-filter" class="sr-only">Filter by sport</label>
+      <select id="admin-student-sport-filter" class="rounded-lg border border-slate-400/20 bg-[#0B1324] px-3.5 py-2 text-xs font-medium text-white focus:border-blue-500 min-h-[40px]">
+        <option value="all">All Sports</option>
+        <% sports.forEach((sp) => { %>
+          <option value="<%= sp.id %>"><%= sp.name %></option>
+        <% }) %>
+      </select>
+    </div>
+  </div>
+
+  <!-- Students Table -->
+  <div class="surface-card rounded-xl overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead class="border-b border-slate-400/15 text-xs text-slate-400">
+        <tr>
+          <th class="py-3.5 px-5 font-medium">Athlete</th>
+          <th class="py-3.5 px-5 font-medium">Department &amp; Year</th>
+          <th class="py-3.5 px-5 font-medium">Primary Sport</th>
+          <th class="py-3.5 px-5 font-medium text-right">Jersey</th>
+          <th class="py-3.5 px-5 font-medium text-right">Points</th>
+          <th class="py-3.5 px-5 font-medium text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="admin-students-tbody" class="divide-y divide-slate-400/10">
+        <% students.forEach((stu) => { %>
+          <tr
+            class="hover:bg-slate-800/35 transition-colors"
+            data-admin-student-row
+            data-sport-id="<%= stu.primarySportId %>"
+            data-search="<%= (stu.name + ' ' + stu.department + ' ' + stu.studentCode + ' ' + stu.primarySportName).toLowerCase() %>"
+          >
+            <td class="py-3.5 px-5">
+              <a href="/student/profile?id=<%= stu.id %>" class="font-semibold text-white hover:text-blue-400"><%= stu.name %></a>
+              <p class="text-xs text-slate-400 font-mono"><%= stu.studentCode %> · <%= stu.email %></p>
+            </td>
+            <td class="py-3.5 px-5 text-slate-300">
+              <%= stu.department %> · <span class="text-slate-400"><%= stu.year %></span>
+            </td>
+            <td class="py-3.5 px-5 text-slate-300">
+              <%= stu.primarySportName %>
+              <p class="text-xs text-slate-400"><%= stu.position %></p>
+            </td>
+            <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300">#<%= stu.jersey %></td>
+            <td class="py-3.5 px-5 text-right font-mono tabular-nums font-semibold text-white"><%= stu.points %></td>
+            <td class="py-3.5 px-5 text-right whitespace-nowrap space-x-2">
+              <button
+                type="button"
+                data-edit-student='<%- JSON.stringify({ id: stu.id, name: stu.name, email: stu.email, department: stu.department, year: stu.year, jersey: stu.jersey, primarySportId: stu.primarySportId, position: stu.position, personalBest: stu.personalBest }) %>'
+                class="rounded-md border border-slate-400/20 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                data-delete-student="<%= stu.id %>"
+                data-student-name="<%= stu.name %>"
+                class="rounded-md border border-rose-500/30 px-3 py-1.5 text-xs font-medium text-rose-300 hover:bg-rose-600/20 transition-colors"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add / Edit Student Modal -->
+<div id="admin-student-modal" role="dialog" aria-modal="true" aria-labelledby="student-modal-title" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4">
+  <div class="w-full max-w-lg rounded-xl surface-elevated p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-400/15">
+      <h2 id="student-modal-title" class="font-display text-2xl font-bold text-white">Add Student-Athlete</h2>
+      <button type="button" data-close-student-modal class="text-xs text-slate-400 hover:text-white">Close</button>
+    </div>
+    <form id="admin-student-form" class="mt-5 space-y-4">
+      <input type="hidden" id="stu-form-id" name="id" value="" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="stu-form-name" class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+          <input id="stu-form-name" name="name" type="text" required class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="stu-form-email" class="block text-xs font-medium text-slate-300 mb-1">College Email</label>
+          <input id="stu-form-email" name="email" type="email" required class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+          <label for="stu-form-dept" class="block text-xs font-medium text-slate-300 mb-1">Department</label>
+          <input id="stu-form-dept" name="department" type="text" required class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="stu-form-year" class="block text-xs font-medium text-slate-300 mb-1">Year</label>
+          <select id="stu-form-year" name="year" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500">
+            <option value="Freshman">Freshman</option>
+            <option value="Sophomore">Sophomore</option>
+            <option value="Junior">Junior</option>
+            <option value="Senior">Senior</option>
+            <option value="Graduate">Graduate</option>
+          </select>
+        </div>
+        <div>
+          <label for="stu-form-jersey" class="block text-xs font-medium text-slate-300 mb-1">Jersey #</label>
+          <input id="stu-form-jersey" name="jersey" type="number" min="0" max="99" value="15" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white font-mono focus:border-blue-500" />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="stu-form-sport" class="block text-xs font-medium text-slate-300 mb-1">Primary Sport</label>
+          <select id="stu-form-sport" name="primarySportId" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500">
+            <% sports.forEach((sp) => { %>
+              <option value="<%= sp.id %>"><%= sp.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div>
+          <label for="stu-form-position" class="block text-xs font-medium text-slate-300 mb-1">Position / Event</label>
+          <input id="stu-form-position" name="position" type="text" placeholder="e.g., Guard / Midfielder" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+      </div>
+      <div>
+        <label for="stu-form-pb" class="block text-xs font-medium text-slate-300 mb-1">Personal Best</label>
+        <input id="stu-form-pb" name="personalBest" type="text" placeholder="e.g., 10.68s · 100m" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+      </div>
+      <div class="pt-3 flex items-center justify-end gap-3">
+        <button type="button" data-close-student-modal class="rounded-lg border border-slate-400/20 px-4 py-2 text-xs font-medium text-slate-300 hover:text-white">Cancel</button>
+        <button type="submit" class="rounded-lg bg-blue-600 px-5 py-2 text-xs font-semibold text-white hover:bg-blue-500">Save Student</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/workspace-shell-end') %>
+<%- include('../partials/modal-and-toast') %>

@@ -1,0 +1,192 @@
+<%- include('../partials/head') %>
+<%- include('../partials/workspace-shell-start') %>
+
+<div class="space-y-8">
+  <!-- Athlete Header Banner -->
+  <section class="surface-card rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div>
+      <p class="text-xs text-blue-400 font-medium">
+        <%= activeStudent.studentCode %> · Jersey #<%= activeStudent.jersey %> · <%= activeStudent.department %>
+      </p>
+      <h1 class="font-display text-4xl font-bold text-white mt-1"><%= activeStudent.name %></h1>
+      <p class="text-sm text-slate-300 mt-1.5">
+        <%= activeStudent.primarySportName %> · <%= activeStudent.position %> · Personal Best: <span class="text-white font-medium"><%= activeStudent.personalBest %></span>
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3 shrink-0">
+      <a href="/student/profile?id=<%= activeStudent.id %>" class="rounded-lg border border-slate-400/20 px-4 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors whitespace-nowrap min-h-[40px] inline-flex items-center">
+        Edit Profile
+      </a>
+      <a href="/sports?studentId=<%= activeStudent.id %>" class="rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors whitespace-nowrap min-h-[40px] inline-flex items-center">
+        Enroll in Sports
+      </a>
+    </div>
+  </section>
+
+  <!-- 4-Column Performance KPIs -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="surface-card rounded-xl p-5">
+      <p class="text-xs text-slate-400">Overall Leaderboard Rank</p>
+      <p class="font-display text-3xl font-bold text-blue-400 mt-2 tabular-nums">#<%= studentRank %></p>
+      <p class="text-xs text-slate-400 mt-1"><%= activeStudent.points %> season points</p>
+    </div>
+    <div class="surface-card rounded-xl p-5">
+      <p class="text-xs text-slate-400">Enrolled Programs</p>
+      <p class="font-display text-3xl font-bold text-white mt-2 tabular-nums"><%= enrolledSportDetails.length %></p>
+      <p class="text-xs text-slate-400 mt-1">Active varsity squads</p>
+    </div>
+    <div class="surface-card rounded-xl p-5">
+      <p class="text-xs text-slate-400">Season Win Rate</p>
+      <p class="font-display text-3xl font-bold text-white mt-2 tabular-nums"><%= activeStudent.winRate %>%</p>
+      <p class="text-xs text-slate-400 mt-1 tabular-nums"><%= activeStudent.wins %> wins / <%= activeStudent.matchesPlayed %> matches</p>
+    </div>
+    <div class="surface-card rounded-xl p-5">
+      <p class="text-xs text-slate-400">Performance Index</p>
+      <p class="font-display text-3xl font-bold text-emerald-400 mt-2 tabular-nums"><%= activeStudent.rating.toFixed(1) %></p>
+      <p class="text-xs text-slate-400 mt-1">Composite season score</p>
+    </div>
+  </section>
+
+  <!-- Main Workspace Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left Column: Fixtures & Results -->
+    <div class="lg:col-span-7 space-y-6">
+      <section class="surface-card rounded-xl">
+        <div class="px-6 py-4 border-b border-slate-400/15 flex items-center justify-between">
+          <h2 class="font-display text-2xl font-bold text-white">My Upcoming Fixtures</h2>
+          <a href="/matches" class="text-xs font-medium text-blue-400 hover:text-blue-300">Full schedule →</a>
+        </div>
+        <% if (personalFixtures.length === 0) { %>
+          <div class="p-6 text-sm text-slate-400">
+            No upcoming fixtures for your enrolled sports. <a href="/sports?studentId=<%= activeStudent.id %>" class="text-blue-400 hover:underline">Explore sports</a> to join a varsity squad.
+          </div>
+        <% } else { %>
+          <div class="divide-y divide-slate-400/15">
+            <% personalFixtures.forEach((fix) => { %>
+              <div class="p-5 flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-xs text-slate-400"><%= fix.sportName %> · <%= fix.round %></p>
+                  <p class="text-sm font-semibold text-white mt-1 truncate"><%= fix.title %></p>
+                  <p class="text-xs text-slate-400 mt-1"><%= fix.venue %></p>
+                </div>
+                <div class="text-right shrink-0 tabular-nums">
+                  <p class="font-mono text-xs font-medium text-white"><%= fix.date %> · <%= fix.time %></p>
+                  <p class="text-xs font-medium mt-1 <%= fix.status === 'Postponed' ? 'text-amber-400' : 'text-blue-400' %>"><%= fix.status %></p>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </section>
+
+      <section class="surface-card rounded-xl">
+        <div class="px-6 py-4 border-b border-slate-400/15 flex items-center justify-between">
+          <h2 class="font-display text-2xl font-bold text-white">Recent Squad Results</h2>
+          <a href="/results" class="text-xs font-medium text-blue-400 hover:text-blue-300">All results →</a>
+        </div>
+        <% if (recentResults.length === 0) { %>
+          <div class="p-6 text-sm text-slate-400">No completed matches recorded yet for your squads.</div>
+        <% } else { %>
+          <div class="divide-y divide-slate-400/15">
+            <% recentResults.forEach((resItem) => { const won = resItem.homeScore >= resItem.awayScore; %>
+              <div class="p-5 flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-xs text-slate-400"><%= resItem.sportName %> · <span class="tabular-nums"><%= resItem.date %></span></p>
+                  <p class="text-sm font-semibold text-white mt-1 truncate"><%= resItem.homeTeam %> vs. <%= resItem.awayTeam %></p>
+                  <p class="text-xs text-slate-400 mt-1">MVP: <%= resItem.mvp %></p>
+                </div>
+                <div class="text-right shrink-0 tabular-nums">
+                  <p class="font-mono text-lg font-bold text-white"><%= resItem.homeScore %> – <%= resItem.awayScore %></p>
+                  <p class="text-xs font-semibold <%= won ? 'text-emerald-400' : 'text-rose-400' %>"><%= won ? 'WIN' : 'LOSS' %></p>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </section>
+    </div>
+
+    <!-- Right Column: Enrolled Sports + Performance Log Form -->
+    <div class="lg:col-span-5 space-y-6">
+      <section class="surface-card rounded-xl">
+        <div class="px-6 py-4 border-b border-slate-400/15 flex items-center justify-between">
+          <h2 class="font-display text-2xl font-bold text-white">Enrolled Sports</h2>
+          <a href="/sports?studentId=<%= activeStudent.id %>" class="text-xs font-medium text-blue-400 hover:text-blue-300">Manage</a>
+        </div>
+        <div class="divide-y divide-slate-400/15">
+          <% if (enrolledSportDetails.length === 0) { %>
+            <div class="p-5 text-sm text-slate-400">Not currently enrolled in any sport.</div>
+          <% } %>
+          <% enrolledSportDetails.forEach((sp) => { %>
+            <div class="p-5 flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-semibold text-white truncate"><%= sp.name %></p>
+                <p class="text-xs text-slate-400 mt-0.5"><%= sp.coach %> · <%= sp.schedule %></p>
+              </div>
+              <button
+                type="button"
+                data-enroll-btn
+                data-student-id="<%= activeStudent.id %>"
+                data-sport-id="<%= sp.id %>"
+                data-enrolled="true"
+                class="rounded-lg border border-slate-400/20 px-3 py-1.5 text-xs font-medium text-slate-300 hover:border-rose-500/40 hover:text-rose-300 transition-colors whitespace-nowrap shrink-0"
+              >
+                Leave Squad
+              </button>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+
+      <!-- Log Training Split -->
+      <section class="surface-card rounded-xl p-6">
+        <h2 class="font-display text-2xl font-bold text-white">Log Performance Split</h2>
+        <p class="text-xs text-slate-400 mt-1">Record a training benchmark or match split (+8 season points).</p>
+        <form id="performance-log-form" data-student-id="<%= activeStudent.id %>" class="mt-4 space-y-3">
+          <div>
+            <label for="log-metric" class="block text-xs font-medium text-slate-300 mb-1">Metric / Drill Name</label>
+            <input id="log-metric" name="metric" type="text" required placeholder="e.g., 200m Time Trial" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="log-value" class="block text-xs font-medium text-slate-300 mb-1">Result / Value</label>
+              <input id="log-value" name="value" type="text" required placeholder="e.g., 23.38s" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500" />
+            </div>
+            <div>
+              <label for="log-date" class="block text-xs font-medium text-slate-300 mb-1">Session Date</label>
+              <input id="log-date" name="date" type="date" value="2026-11-19" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+            </div>
+          </div>
+          <div>
+            <label for="log-note" class="block text-xs font-medium text-slate-300 mb-1">Session Note</label>
+            <input id="log-note" name="note" type="text" placeholder="Conditions or coach feedback" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-blue-500" />
+          </div>
+          <button type="submit" class="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors min-h-[40px]">
+            Save Performance Entry
+          </button>
+        </form>
+
+        <div class="mt-6 pt-5 border-t border-slate-400/15">
+          <h3 class="text-xs font-semibold text-slate-300 mb-3">Recent Split Logs</h3>
+          <ul id="performance-log-list" class="space-y-2.5 text-xs">
+            <% if (activeStudent.logs.length === 0) { %>
+              <li class="text-slate-400">No training logs recorded yet.</li>
+            <% } %>
+            <% activeStudent.logs.forEach((log) => { %>
+              <li class="flex items-center justify-between gap-3 py-1.5 border-b border-slate-400/10 last:border-b-0">
+                <div>
+                  <p class="font-medium text-white"><%= log.metric %></p>
+                  <p class="text-slate-400"><%= log.date %> <%= log.note ? '· ' + log.note : '' %></p>
+                </div>
+                <span class="font-mono font-semibold text-blue-400 tabular-nums shrink-0"><%= log.value %></span>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/workspace-shell-end') %>
+<%- include('../partials/modal-and-toast') %>

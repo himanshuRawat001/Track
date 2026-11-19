@@ -1,0 +1,39 @@
+{
+  "name": "track-college-sports",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build:css && node server.js",
+    "build": "npx @tailwindcss/cli -i ./src/styles/input.css -o ./public/css/styles.css --minify",
+    "build:css": "npx @tailwindcss/cli -i ./src/styles/input.css -o ./public/css/styles.css --minify",
+    "start": "node server.js",
+    "clean": "rm -rf public/css/styles.css",
+    "lint": "node --check server.js && for f in models/*.js models/*/*.js controllers/*/*.js routes/*.js routes/*/*.js public/js/*.js; do node --check \"$f\" || exit 1; done"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@tailwindcss/cli": "^4.3.5",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "dotenv": "^17.2.3",
+    "ejs": "^7.0.2",
+    "express": "^4.21.2",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2",
+    "@types/express": "^4.17.21"
+  }
+}

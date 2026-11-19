@@ -1,0 +1,240 @@
+<%- include('../partials/head') %>
+<%- include('../partials/public-header') %>
+
+<main>
+  <!-- Hero Split -->
+  <section class="border-b border-slate-400/15 bg-[#060B16]">
+    <div class="mx-auto max-w-[1360px] px-6 py-12 lg:py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div class="lg:col-span-6 flex flex-col justify-center py-2">
+          <p class="text-xs font-medium tracking-wide text-blue-400 mb-3">
+            Track University Athletics · Season 2026–27
+          </p>
+          <h1 class="font-display font-bold tracking-tight text-white text-balance leading-[0.98]" style="font-size: clamp(2.5rem, 4.4vw, 4rem);">
+            Collegiate Sports Management &amp; Performance Tracking
+          </h1>
+          <p class="mt-5 text-base text-slate-300 leading-relaxed max-w-xl">
+            Monitor varsity rosters, schedule conference fixtures, record verified match scores, and track student-athlete standings from one unified athletics system.
+          </p>
+          <div class="mt-8 flex flex-wrap items-center gap-5">
+            <a href="/student" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-500 whitespace-nowrap shrink-0 min-h-[44px]">
+              Open Student Dashboard
+            </a>
+            <a href="/sports" class="inline-flex items-center justify-center rounded-lg border border-slate-400/20 px-5 py-3 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/60 hover:text-white whitespace-nowrap shrink-0 min-h-[44px]">
+              Explore Varsity Sports
+            </a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6">
+          <div class="relative h-full min-h-[300px] lg:min-h-[410px] overflow-hidden rounded-xl border border-slate-400/20 bg-[#0B1324]">
+            <img
+              src="<%= heroImage %>"
+              alt="Collegiate athletics stadium and illuminated running track at twilight"
+              referrerpolicy="no-referrer"
+              class="h-full w-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#060B16]/90 via-[#060B16]/25 to-transparent"></div>
+            <div class="absolute bottom-0 inset-x-0 p-6 flex items-end justify-between gap-4">
+              <div>
+                <p class="text-xs text-slate-300">Next Featured Fixture</p>
+                <p class="font-display text-2xl font-bold text-white mt-0.5">
+                  <%= fixtures[0] ? fixtures[0].title : 'Conference Season Opener' %>
+                </p>
+                <p class="text-xs text-slate-300 mt-1 tabular-nums">
+                  <%= fixtures[0] ? `${fixtures[0].date} · ${fixtures[0].time} · ${fixtures[0].venue}` : 'Olympic Oval Stadium' %>
+                </p>
+              </div>
+              <a href="/matches" class="rounded-lg border border-white/20 bg-[#060B16]/75 px-3.5 py-2 text-xs font-medium text-white hover:bg-blue-600 hover:border-blue-500 transition-colors whitespace-nowrap shrink-0">
+                View Schedule
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full-Width 4-Column KPI Strip -->
+      <div class="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="surface-card rounded-xl p-5">
+          <p class="text-xs text-slate-400">Active Varsity Sports</p>
+          <p class="font-display text-3xl font-bold text-white mt-2 tabular-nums"><%= stats.activeSportsCount %></p>
+          <p class="text-xs text-slate-400 mt-1"><%= stats.totalSportsCount %> total programs</p>
+        </div>
+        <div class="surface-card rounded-xl p-5">
+          <p class="text-xs text-slate-400">Registered Student-Athletes</p>
+          <p class="font-display text-3xl font-bold text-white mt-2 tabular-nums"><%= stats.totalStudentsCount %></p>
+          <p class="text-xs text-slate-400 mt-1">Across 6 academic departments</p>
+        </div>
+        <div class="surface-card rounded-xl p-5">
+          <p class="text-xs text-slate-400">Scheduled Fixtures</p>
+          <p class="font-display text-3xl font-bold text-blue-400 mt-2 tabular-nums"><%= stats.upcomingFixturesCount %></p>
+          <p class="text-xs text-slate-400 mt-1">Upcoming conference dates</p>
+        </div>
+        <div class="surface-card rounded-xl p-5">
+          <p class="text-xs text-slate-400">Department Win Rate</p>
+          <p class="font-display text-3xl font-bold text-white mt-2 tabular-nums"><%= stats.avgWinPct %>%</p>
+          <p class="text-xs text-slate-400 mt-1"><%= stats.completedResultsCount %> verified results</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Varsity Programs -->
+  <section class="mx-auto max-w-[1360px] px-6 py-14 border-b border-slate-400/15">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+      <div>
+        <p class="text-xs font-medium text-blue-400">01. Varsity Programs</p>
+        <h2 class="font-display text-3xl font-bold text-white mt-1">Explore Active Sports</h2>
+      </div>
+      <a href="/sports" class="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors whitespace-nowrap">
+        View all <%= sports.length %> sports →
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <% sports.slice(0, 4).forEach((sport) => { %>
+        <article class="surface-card rounded-xl overflow-hidden flex flex-col">
+          <div class="aspect-[4/3] bg-[#0F1A30] relative overflow-hidden">
+            <% if (sport.image) { %>
+              <img src="<%= sport.image %>" alt="<%= sport.name %>" referrerpolicy="no-referrer" class="h-full w-full object-cover" />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0B1324] via-transparent to-transparent"></div>
+            <% } else { %>
+              <div class="h-full w-full flex items-center justify-center bg-gradient-to-br from-[#0F1A30] to-[#060B16] text-slate-400 text-sm font-medium">
+                <%= sport.name %>
+              </div>
+            <% } %>
+          </div>
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <div>
+              <p class="text-xs text-slate-400">
+                <span><%= sport.category %></span>
+                <span aria-hidden="true"> · </span>
+                <span><%= sport.season %></span>
+              </p>
+              <h3 class="font-display text-2xl font-bold text-white mt-1"><%= sport.name %></h3>
+              <p class="text-xs text-slate-400 mt-2"><%= sport.coach %> · <%= sport.venue %></p>
+            </div>
+            <div class="mt-5 pt-4 border-t border-slate-400/15 flex items-center justify-between text-xs tabular-nums">
+              <span class="text-slate-300"><%= sport.wins %>W – <%= sport.losses %>L</span>
+              <a href="/sports" class="font-semibold text-blue-400 hover:text-blue-300">Program details</a>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- Fixtures & Match Results Split -->
+  <section class="mx-auto max-w-[1360px] px-6 py-14 border-b border-slate-400/15">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Upcoming Fixtures -->
+      <div class="lg:col-span-6">
+        <div class="flex items-end justify-between gap-4 mb-5">
+          <div>
+            <p class="text-xs font-medium text-blue-400">02. Schedule</p>
+            <h2 class="font-display text-3xl font-bold text-white mt-1">Upcoming Fixtures</h2>
+          </div>
+          <a href="/matches" class="text-sm font-medium text-blue-400 hover:text-blue-300">All fixtures →</a>
+        </div>
+        <div class="surface-card rounded-xl divide-y divide-slate-400/15">
+          <% fixtures.forEach((match) => { %>
+            <div class="p-5 flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="text-xs text-slate-400">
+                  <span><%= match.sportName %></span>
+                  <span aria-hidden="true"> · </span>
+                  <span><%= match.round %></span>
+                </p>
+                <p class="text-base font-semibold text-white mt-1 truncate"><%= match.title %></p>
+                <p class="text-xs text-slate-400 mt-1"><%= match.venue %></p>
+              </div>
+              <div class="text-right shrink-0 tabular-nums">
+                <p class="font-mono text-sm font-medium text-white"><%= match.date %></p>
+                <p class="text-xs text-slate-400 mt-0.5"><%= match.time %></p>
+                <p class="text-xs font-medium mt-1 <%= match.status === 'Postponed' ? 'text-amber-400' : 'text-blue-400' %>"><%= match.status %></p>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- Recent Match Results -->
+      <div class="lg:col-span-6">
+        <div class="flex items-end justify-between gap-4 mb-5">
+          <div>
+            <p class="text-xs font-medium text-blue-400">03. Scoreboard</p>
+            <h2 class="font-display text-3xl font-bold text-white mt-1">Recent Match Results</h2>
+          </div>
+          <a href="/results" class="text-sm font-medium text-blue-400 hover:text-blue-300">All results →</a>
+        </div>
+        <div class="surface-card rounded-xl divide-y divide-slate-400/15">
+          <% results.forEach((match) => { const homeWon = match.homeScore >= match.awayScore; %>
+            <div class="p-5 flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="text-xs text-slate-400">
+                  <span><%= match.sportName %></span>
+                  <span aria-hidden="true"> · </span>
+                  <span class="tabular-nums"><%= match.date %></span>
+                </p>
+                <p class="text-base font-semibold text-white mt-1 truncate"><%= match.homeTeam %> vs. <%= match.awayTeam %></p>
+                <p class="text-xs text-slate-400 mt-1">Top Performer: <%= match.mvp %></p>
+              </div>
+              <div class="text-right shrink-0 tabular-nums">
+                <p class="font-mono text-xl font-semibold text-white"><%= match.homeScore %> – <%= match.awayScore %></p>
+                <p class="text-xs font-medium mt-0.5 <%= homeWon ? 'text-emerald-400' : 'text-rose-400' %>">
+                  <%= homeWon ? 'WIN' : 'LOSS' %> · Final
+                </p>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Leaderboard Preview -->
+  <section class="mx-auto max-w-[1360px] px-6 py-14">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+      <div>
+        <p class="text-xs font-medium text-blue-400">04. Season Standings</p>
+        <h2 class="font-display text-3xl font-bold text-white mt-1">Top Performing Student-Athletes</h2>
+      </div>
+      <a href="/leaderboard" class="text-sm font-medium text-blue-400 hover:text-blue-300">Full leaderboard →</a>
+    </div>
+
+    <div class="surface-card rounded-xl overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-400/15 text-xs text-slate-400">
+          <tr>
+            <th class="py-3.5 px-5 font-medium">Rank</th>
+            <th class="py-3.5 px-5 font-medium">Student-Athlete</th>
+            <th class="py-3.5 px-5 font-medium">Primary Sport</th>
+            <th class="py-3.5 px-5 font-medium text-right">Matches</th>
+            <th class="py-3.5 px-5 font-medium text-right">Wins</th>
+            <th class="py-3.5 px-5 font-medium text-right">Points</th>
+            <th class="py-3.5 px-5 font-medium text-right">Rating</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-400/10">
+          <% topAthletes.forEach((athlete) => { %>
+            <tr class="hover:bg-slate-800/35 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-xs font-semibold <%= athlete.rank <= 3 ? 'text-blue-400' : 'text-slate-400' %> tabular-nums">#<%= athlete.rank %></td>
+              <td class="py-3.5 px-5">
+                <a href="/student/profile?id=<%= athlete.id %>" class="font-semibold text-white hover:text-blue-400 transition-colors"><%= athlete.name %></a>
+                <p class="text-xs text-slate-400"><%= athlete.department %> · <%= athlete.year %></p>
+              </td>
+              <td class="py-3.5 px-5 text-slate-300"><%= athlete.primarySportName %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= athlete.matchesPlayed %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= athlete.wins %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums font-semibold text-white"><%= athlete.points %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-blue-400 font-semibold"><%= athlete.rating.toFixed(1) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/modal-and-toast') %>

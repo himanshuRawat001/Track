@@ -1,0 +1,135 @@
+<%- include('../partials/head') %>
+<%- include('../partials/public-header') %>
+
+<main class="mx-auto max-w-[1360px] px-6 py-10 lg:py-12">
+  <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-slate-400/15">
+    <div>
+      <p class="text-xs font-medium text-blue-400">Conference &amp; Department Rankings</p>
+      <h1 class="font-display text-4xl lg:text-5xl font-bold text-white mt-1">Season Leaderboard</h1>
+      <p class="text-sm text-slate-300 mt-2 max-w-2xl">
+        Live collegiate athlete rankings and varsity program standings updated automatically as match results and training splits are recorded.
+      </p>
+    </div>
+
+    <div role="tablist" aria-label="Leaderboard views" class="flex items-center gap-1 p-1 rounded-lg bg-[#0B1324] border border-slate-400/15 self-start lg:self-auto">
+      <button type="button" data-lb-tab="athletes" class="px-4 py-2 text-xs font-medium rounded-md bg-blue-600 text-white transition-colors whitespace-nowrap">Athlete Standings</button>
+      <button type="button" data-lb-tab="programs" class="px-4 py-2 text-xs font-medium rounded-md text-slate-300 hover:text-white transition-colors whitespace-nowrap">Program Standings</button>
+    </div>
+  </div>
+
+  <!-- Athlete Standings Panel -->
+  <section id="lb-panel-athletes" class="mt-6 space-y-5">
+    <form method="GET" action="/leaderboard" class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <div>
+          <label for="lb-sport-select" class="sr-only">Filter by sport</label>
+          <select id="lb-sport-select" name="sport" onchange="this.form.submit()" class="rounded-lg border border-slate-400/20 bg-[#0B1324] px-3.5 py-2 text-xs font-medium text-white focus:border-blue-500 min-h-[40px]">
+            <option value="all" <%= sportFilter === 'all' ? 'selected' : '' %>>All Varsity Sports</option>
+            <% sports.forEach((sp) => { %>
+              <option value="<%= sp.id %>" <%= sportFilter === sp.id ? 'selected' : '' %>><%= sp.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div>
+          <label for="lb-sort-select" class="sr-only">Sort leaderboard by</label>
+          <select id="lb-sort-select" name="sort" onchange="this.form.submit()" class="rounded-lg border border-slate-400/20 bg-[#0B1324] px-3.5 py-2 text-xs font-medium text-white focus:border-blue-500 min-h-[40px]">
+            <option value="points" <%= sortBy === 'points' ? 'selected' : '' %>>Sort by Season Points</option>
+            <option value="rating" <%= sortBy === 'rating' ? 'selected' : '' %>>Sort by Performance Rating</option>
+            <option value="wins" <%= sortBy === 'wins' ? 'selected' : '' %>>Sort by Total Wins</option>
+            <option value="winRate" <%= sortBy === 'winRate' ? 'selected' : '' %>>Sort by Win Percentage</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-400 tabular-nums">Showing <%= athletes.length %> ranked student-athletes</p>
+    </form>
+
+    <div class="surface-card rounded-xl overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-400/15 text-xs text-slate-400">
+          <tr>
+            <th class="py-3.5 px-5 font-medium">Rank</th>
+            <th class="py-3.5 px-5 font-medium">Student-Athlete</th>
+            <th class="py-3.5 px-5 font-medium">Primary Sport</th>
+            <th class="py-3.5 px-5 font-medium">Personal Best</th>
+            <th class="py-3.5 px-5 font-medium text-right">Matches</th>
+            <th class="py-3.5 px-5 font-medium text-right">Wins</th>
+            <th class="py-3.5 px-5 font-medium text-right">Win %</th>
+            <th class="py-3.5 px-5 font-medium text-right">Points</th>
+            <th class="py-3.5 px-5 font-medium text-right">Rating</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-400/10">
+          <% if (athletes.length === 0) { %>
+            <tr>
+              <td colspan="9" class="py-10 px-5 text-center text-slate-400">No athletes ranked for the selected sport filter.</td>
+            </tr>
+          <% } %>
+          <% athletes.forEach((athlete) => { %>
+            <tr class="hover:bg-slate-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-xs font-bold tabular-nums <%= athlete.rank <= 3 ? 'text-blue-400' : 'text-slate-400' %>">
+                #<%= athlete.rank %>
+              </td>
+              <td class="py-3.5 px-5">
+                <a href="/student/profile?id=<%= athlete.id %>" class="font-semibold text-white hover:text-blue-400 transition-colors"><%= athlete.name %></a>
+                <p class="text-xs text-slate-400"><%= athlete.department %> · <%= athlete.year %> · #<%= athlete.jersey %></p>
+              </td>
+              <td class="py-3.5 px-5 text-slate-300"><%= athlete.primarySportName %></td>
+              <td class="py-3.5 px-5 font-mono text-xs text-slate-300"><%= athlete.personalBest %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= athlete.matchesPlayed %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= athlete.wins %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= athlete.winRate %>%</td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums font-semibold text-white"><%= athlete.points %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums font-semibold text-blue-400"><%= athlete.rating.toFixed(1) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Program Standings Panel -->
+  <section id="lb-panel-programs" class="hidden mt-6">
+    <div class="surface-card rounded-xl overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-400/15 text-xs text-slate-400">
+          <tr>
+            <th class="py-3.5 px-5 font-medium">Rank</th>
+            <th class="py-3.5 px-5 font-medium">Varsity Program</th>
+            <th class="py-3.5 px-5 font-medium">Head Coach</th>
+            <th class="py-3.5 px-5 font-medium text-right">Roster</th>
+            <th class="py-3.5 px-5 font-medium text-right">Played</th>
+            <th class="py-3.5 px-5 font-medium text-right">Wins</th>
+            <th class="py-3.5 px-5 font-medium text-right">Losses</th>
+            <th class="py-3.5 px-5 font-medium text-right">Win %</th>
+            <th class="py-3.5 px-5 font-medium text-right">Point Diff</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-400/10">
+          <% teamStandings.forEach((team) => { %>
+            <tr class="hover:bg-slate-800/40 transition-colors">
+              <td class="py-3.5 px-5 font-mono text-xs font-bold tabular-nums <%= team.rank <= 3 ? 'text-blue-400' : 'text-slate-400' %>">#<%= team.rank %></td>
+              <td class="py-3.5 px-5">
+                <p class="font-semibold text-white"><%= team.name %></p>
+                <p class="text-xs text-slate-400"><%= team.category %> · <%= team.venue %></p>
+              </td>
+              <td class="py-3.5 px-5 text-slate-300"><%= team.coach %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= team.rosterCount %> / <%= team.maxRoster %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= team.played %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-emerald-400 font-semibold"><%= team.wins %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-300"><%= team.losses %></td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums font-semibold text-white"><%= team.winPct %>%</td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums <%= team.diff >= 0 ? 'text-blue-400' : 'text-rose-400' %>">
+                <%= team.diff >= 0 ? '+' + team.diff : team.diff %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/modal-and-toast') %>

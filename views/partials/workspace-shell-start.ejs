@@ -1,0 +1,130 @@
+<div class="min-h-screen flex bg-[#060B16]">
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:flex lg:w-[252px] lg:flex-col lg:fixed lg:inset-y-0 border-r border-slate-400/15 bg-[#091020]">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-400/15">
+      <a href="/" class="font-display text-2xl font-bold tracking-tight text-white whitespace-nowrap shrink-0">Track</a>
+      <span class="text-xs font-medium text-slate-400"><%= workspace === 'admin' ? 'Admin' : 'Athlete' %></span>
+    </div>
+
+    <nav aria-label="Workspace navigation" class="flex-1 overflow-y-auto px-4 py-6 space-y-7">
+      <% if (workspace === 'student') { %>
+        <div>
+          <p class="px-3 mb-2 text-xs font-semibold tracking-wide text-slate-400">Student Portal</p>
+          <ul class="space-y-1 text-sm">
+            <li>
+              <a href="/student<%= typeof activeStudent !== 'undefined' && activeStudent ? '?studentId=' + activeStudent.id : '' %>" class="flex items-center justify-between rounded-lg px-3 py-2.5 font-medium transition-colors <%= activeNav === 'student-dashboard' ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' %>">
+                <span>Student Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="/student/profile<%= typeof activeStudent !== 'undefined' && activeStudent ? '?id=' + activeStudent.id : '' %>" class="flex items-center justify-between rounded-lg px-3 py-2.5 font-medium transition-colors <%= activeNav === 'student-profile' ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' %>">
+                <span>Student Profile</span>
+              </a>
+            </li>
+            <li>
+              <a href="/sports<%= typeof activeStudent !== 'undefined' && activeStudent ? '?studentId=' + activeStudent.id : '' %>" class="flex items-center justify-between rounded-lg px-3 py-2.5 font-medium text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">
+                <span>Explore Sports</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p class="px-3 mb-2 text-xs font-semibold tracking-wide text-slate-400">Competition</p>
+          <ul class="space-y-1 text-sm">
+            <li><a href="/matches" class="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">Matches &amp; Fixtures</a></li>
+            <li><a href="/results" class="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">Match Results</a></li>
+            <li><a href="/leaderboard" class="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">Leaderboard</a></li>
+          </ul>
+        </div>
+      <% } else { %>
+        <div>
+          <p class="px-3 mb-2 text-xs font-semibold tracking-wide text-slate-400">Admin Console</p>
+          <ul class="space-y-1 text-sm">
+            <li>
+              <a href="/admin" class="block rounded-lg px-3 py-2.5 font-medium transition-colors <%= activeNav === 'admin-dashboard' ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' %>">
+                Admin Dashboard
+              </a>
+            </li>
+            <li>
+              <a href="/admin/students" class="block rounded-lg px-3 py-2.5 font-medium transition-colors <%= activeNav === 'admin-students' ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' %>">
+                Manage Students
+              </a>
+            </li>
+            <li>
+              <a href="/admin/sports-matches" class="block rounded-lg px-3 py-2.5 font-medium transition-colors <%= activeNav === 'admin-sports-matches' ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30' : 'text-slate-300 hover:bg-slate-800/60 hover:text-white' %>">
+                Manage Sports &amp; Matches
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p class="px-3 mb-2 text-xs font-semibold tracking-wide text-slate-400">Public Views</p>
+          <ul class="space-y-1 text-sm">
+            <li><a href="/sports" class="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">Explore Sports</a></li>
+            <li><a href="/matches" class="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">Matches &amp; Fixtures</a></li>
+            <li><a href="/results" class="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">Match Results</a></li>
+            <li><a href="/leaderboard" class="block rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60 hover:text-white transition-colors">Leaderboard</a></li>
+          </ul>
+        </div>
+      <% } %>
+    </nav>
+
+    <div class="border-t border-slate-400/15 p-4 space-y-2">
+      <% if (workspace === 'student') { %>
+        <a href="/admin" class="block w-full text-center rounded-lg border border-slate-400/20 px-3 py-2 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors">Switch to Admin Console</a>
+      <% } else { %>
+        <a href="/student" class="block w-full text-center rounded-lg border border-slate-400/20 px-3 py-2 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors">Switch to Student Portal</a>
+      <% } %>
+      <a href="/" class="block w-full text-center rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors">Return to Public Home</a>
+    </div>
+  </aside>
+
+  <!-- Main Workspace Viewport -->
+  <div class="flex-1 lg:pl-[252px] flex flex-col min-w-0">
+    <header class="sticky top-0 z-30 border-b border-slate-400/15 bg-[#060B16]/90 backdrop-blur-md">
+      <div class="flex items-center justify-between gap-4 px-6 py-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <button type="button" data-workspace-drawer-toggle class="lg:hidden inline-flex items-center justify-center rounded-lg border border-slate-400/20 px-3 py-2 text-xs font-medium text-slate-200 hover:bg-slate-800/60 min-h-[44px]">
+            Menu
+          </button>
+          <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-slate-400 truncate">
+            <% breadcrumbs.forEach((crumb, idx) => { %>
+              <% if (idx > 0) { %><span aria-hidden="true">/</span><% } %>
+              <span class="<%= idx === breadcrumbs.length - 1 ? 'text-white font-medium truncate' : 'hidden sm:inline' %>"><%= crumb %></span>
+            <% }) %>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+          <% if (workspace === 'student' && typeof allStudents !== 'undefined') { %>
+            <label for="student-switcher" class="sr-only">Active Student Athlete</label>
+            <select id="student-switcher" data-student-switcher class="rounded-lg border border-slate-400/20 bg-[#0B1324] px-3 py-2 text-xs font-medium text-slate-200 focus:border-blue-500">
+              <% allStudents.forEach((stu) => { %>
+                <option value="<%= stu.id %>" <%= activeStudent && stu.id === activeStudent.id ? 'selected' : '' %>><%= stu.name %> · #<%= stu.jersey %></option>
+              <% }) %>
+            </select>
+          <% } else if (workspace === 'admin') { %>
+            <a href="/admin/sports-matches" class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-500 transition-colors whitespace-nowrap shrink-0 min-h-[40px]">
+              Schedule &amp; Score
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Mobile Workspace Drawer -->
+      <div id="workspace-mobile-drawer" class="hidden lg:hidden border-t border-slate-400/15 bg-[#0B1324] px-6 py-4">
+        <div class="grid grid-cols-2 gap-2 text-sm">
+          <a href="/" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Public Home</a>
+          <a href="/sports" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Explore Sports</a>
+          <a href="/student" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Student Dashboard</a>
+          <a href="/student/profile" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Student Profile</a>
+          <a href="/matches" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Fixtures</a>
+          <a href="/results" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Match Results</a>
+          <a href="/leaderboard" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Leaderboard</a>
+          <a href="/admin" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Admin Dashboard</a>
+          <a href="/admin/students" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Manage Students</a>
+          <a href="/admin/sports-matches" class="rounded-lg px-3 py-2 text-slate-300 hover:bg-slate-800/60">Sports &amp; Matches</a>
+        </div>
+      </div>
+    </header>
+    <main class="flex-1 p-6 lg:p-8 max-w-[1320px] w-full mx-auto">

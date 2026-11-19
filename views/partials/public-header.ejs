@@ -1,0 +1,37 @@
+<header class="sticky top-0 z-40 border-b border-slate-400/15 bg-[#060B16]/90 backdrop-blur-md">
+  <div class="mx-auto flex max-w-[1360px] items-center justify-between gap-8 px-6 py-4">
+    <a href="/" class="font-display text-2xl font-bold tracking-tight text-white whitespace-nowrap shrink-0">
+      Track
+    </a>
+
+    <nav aria-label="Primary navigation" class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
+      <a href="/sports" class="<%= activeNav === 'sports' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'hover:text-white transition-colors' %> whitespace-nowrap shrink-0">Explore Sports</a>
+      <a href="/matches" class="<%= activeNav === 'matches' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'hover:text-white transition-colors' %> whitespace-nowrap shrink-0">Fixtures</a>
+      <a href="/results" class="<%= activeNav === 'results' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'hover:text-white transition-colors' %> whitespace-nowrap shrink-0">Results</a>
+      <a href="/leaderboard" class="<%= activeNav === 'leaderboard' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'hover:text-white transition-colors' %> whitespace-nowrap shrink-0">Leaderboard</a>
+      <a href="/student" class="<%= activeNav === 'student-dashboard' || activeNav === 'student-profile' ? 'text-white border-b-2 border-blue-500 pb-0.5' : 'hover:text-white transition-colors' %> whitespace-nowrap shrink-0">Student Portal</a>
+    </nav>
+
+    <div class="flex items-center gap-3 shrink-0">
+      <a href="/admin" class="hidden sm:inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 whitespace-nowrap shrink-0 min-h-[40px]">
+        Admin Console
+      </a>
+      <button type="button" data-mobile-menu-toggle aria-expanded="false" aria-controls="public-mobile-nav" class="md:hidden inline-flex items-center justify-center rounded-lg border border-slate-400/20 px-3 py-2 text-xs font-medium text-slate-200 hover:bg-slate-800/60 min-h-[44px] min-w-[44px]">
+        Menu
+      </button>
+    </div>
+  </div>
+
+  <div id="public-mobile-nav" class="hidden md:hidden border-t border-slate-400/15 bg-[#0B1324] px-6 py-4">
+    <div class="flex flex-col gap-3 text-sm font-medium">
+      <a href="/" class="py-1.5 text-slate-200 hover:text-white">Home</a>
+      <a href="/sports" class="py-1.5 text-slate-200 hover:text-white">Explore Sports</a>
+      <a href="/matches" class="py-1.5 text-slate-200 hover:text-white">Matches &amp; Fixtures</a>
+      <a href="/results" class="py-1.5 text-slate-200 hover:text-white">Match Results</a>
+      <a href="/leaderboard" class="py-1.5 text-slate-200 hover:text-white">Leaderboard</a>
+      <a href="/student" class="py-1.5 text-slate-200 hover:text-white">Student Dashboard</a>
+      <a href="/student/profile" class="py-1.5 text-slate-200 hover:text-white">Student Profile</a>
+      <a href="/admin" class="mt-2 inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white">Admin Console</a>
+    </div>
+  </div>
+</header>

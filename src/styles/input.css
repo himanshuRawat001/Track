@@ -1,0 +1,75 @@
+@import "tailwindcss";
+@source "../../views/**/*.ejs";
+@source "../../public/js/**/*.js";
+
+@theme {
+  --font-display: "Barlow Condensed", system-ui, -apple-system, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-navy-950: #060b16;
+  --color-navy-900: #0b1324;
+  --color-navy-850: #0f1a30;
+  --color-navy-800: #14223d;
+  --color-navy-700: #1d3154;
+  --color-electric-500: #3b82f6;
+  --color-electric-600: #2563eb;
+  --color-electric-400: #60a5fa;
+}
+
+@layer base {
+  html {
+    background-color: #060b16;
+    color: #e2e8f0;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #060b16;
+    color: #e2e8f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, .font-display {
+    font-family: "Barlow Condensed", system-ui, -apple-system, sans-serif;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  *:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+}
+
+.surface-card {
+  background-color: #0b1324;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.surface-elevated {
+  background-color: #0f1a30;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.hairline-divider {
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

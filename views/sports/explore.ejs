@@ -1,0 +1,163 @@
+<%- include('../partials/head') %>
+<%- include('../partials/public-header') %>
+
+<main class="mx-auto max-w-[1360px] px-6 py-10 lg:py-12">
+  <!-- Header & Active Student Switcher -->
+  <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-slate-400/15">
+    <div>
+      <p class="text-xs font-medium text-blue-400">Varsity Directory</p>
+      <h1 class="font-display text-4xl lg:text-5xl font-bold text-white mt-1">Explore College Sports</h1>
+      <p class="text-sm text-slate-300 mt-2 max-w-2xl">
+        Browse official collegiate programs, inspect coaching staffs and roster capacities, and enroll directly into active varsity squads.
+      </p>
+    </div>
+    <div class="flex items-center gap-3 shrink-0">
+      <label for="explore-student-select" class="text-xs font-medium text-slate-400 whitespace-nowrap">Acting as Athlete:</label>
+      <select id="explore-student-select" data-student-switcher class="rounded-lg border border-slate-400/20 bg-[#0B1324] px-3 py-2 text-xs font-medium text-white focus:border-blue-500 min-h-[40px]">
+        <% allStudents.forEach((stu) => { %>
+          <option value="<%= stu.id %>" <%= stu.id === activeStudent.id ? 'selected' : '' %>><%= stu.name %> (#<%= stu.jersey %>)</option>
+        <% }) %>
+      </select>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div role="tablist" aria-label="Sport categories" class="flex flex-wrap items-center gap-1.5 p-1 rounded-lg bg-[#0B1324] border border-slate-400/15">
+      <% categories.forEach((cat, idx) => { %>
+        <button
+          type="button"
+          data-category-filter="<%= cat %>"
+          class="px-3.5 py-2 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 <%= idx === 0 ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800/60' %>"
+        >
+          <%= cat %>
+        </button>
+      <% }) %>
+    </div>
+
+    <div class="w-full md:w-72">
+      <label for="sports-search" class="sr-only">Search sports</label>
+      <input
+        id="sports-search"
+        type="search"
+        placeholder="Search sport, coach, or venue..."
+        class="w-full rounded-lg border border-slate-400/20 bg-[#0B1324] px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-blue-500"
+      />
+    </div>
+  </div>
+
+  <!-- Sports Grid -->
+  <div id="sports-grid" class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% sports.forEach((sport) => {
+      const isEnrolled = activeStudent.enrolledSports.includes(sport.id);
+      const fillPct = Math.min(100, Math.round((sport.rosterCount / sport.maxRoster) * 100));
+    %>
+      <article
+        class="surface-card rounded-xl overflow-hidden flex flex-col"
+        data-sport-card
+        data-category="<%= sport.category %>"
+        data-search="<%= (sport.name + ' ' + sport.coach + ' ' + sport.venue + ' ' + sport.category).toLowerCase() %>"
+      >
+        <div class="aspect-[4/3] bg-[#0F1A30] relative overflow-hidden">
+          <% if (sport.image) { %>
+            <img src="<%= sport.image %>" alt="<%= sport.name %>" referrerpolicy="no-referrer" class="h-full w-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0B1324] via-[#0B1324]/15 to-transparent"></div>
+          <% } else { %>
+            <div class="h-full w-full flex flex-col items-center justify-center bg-gradient-to-br from-[#0F1A30] via-[#0B1324] to-[#060B16] p-6">
+              <svg viewBox="0 0 120 60" class="w-28 h-14 text-blue-500/40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <rect x="4" y="4" width="112" height="52" rx="4" />
+                <line x1="60" y1="4" x2="60" y2="56" />
+                <circle cx="60" cy="30" r="12" />
+              </svg>
+              <span class="mt-2 text-xs font-medium text-slate-400"><%= sport.venue %></span>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="p-6 flex-1 flex flex-col justify-between">
+          <div>
+            <p class="text-xs text-slate-400">
+              <span><%= sport.category %></span>
+              <span aria-hidden="true"> · </span>
+              <span><%= sport.season %></span>
+              <span aria-hidden="true"> · </span>
+              <span class="<%= sport.status === 'Active' ? 'text-emerald-400' : 'text-amber-400' %> font-medium"><%= sport.status %></span>
+            </p>
+            <h2 class="font-display text-3xl font-bold text-white mt-1.5"><%= sport.name %></h2>
+            <p class="text-sm text-slate-300 mt-2 leading-relaxed"><%= sport.summary %></p>
+
+            <dl class="mt-5 grid grid-cols-2 gap-3 pt-4 border-t border-slate-400/15 text-xs">
+              <div>
+                <dt class="text-slate-400">Head Coach</dt>
+                <dd class="text-white font-medium mt-0.5"><%= sport.coach %></dd>
+              </div>
+              <div>
+                <dt class="text-slate-400">Training Schedule</dt>
+                <dd class="text-white font-medium mt-0.5"><%= sport.schedule %></dd>
+              </div>
+              <div>
+                <dt class="text-slate-400">Home Facility</dt>
+                <dd class="text-white font-medium mt-0.5"><%= sport.venue %></dd>
+              </div>
+              <div>
+                <dt class="text-slate-400">Season Record</dt>
+                <dd class="text-white font-mono font-medium mt-0.5 tabular-nums"><%= sport.wins %>W – <%= sport.losses %>L</dd>
+              </div>
+            </dl>
+
+            <div class="mt-4">
+              <div class="flex items-center justify-between text-xs mb-1.5">
+                <span class="text-slate-400">Roster Capacity</span>
+                <span class="font-mono text-slate-200 tabular-nums" data-roster-count-for="<%= sport.id %>"><%= sport.rosterCount %> / <%= sport.maxRoster %></span>
+              </div>
+              <div class="h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full" style="width: <%= fillPct %>%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-400/15 flex items-center gap-3">
+            <button
+              type="button"
+              data-enroll-btn
+              data-student-id="<%= activeStudent.id %>"
+              data-sport-id="<%= sport.id %>"
+              data-enrolled="<%= isEnrolled ? 'true' : 'false' %>"
+              class="flex-1 rounded-lg px-4 py-2.5 text-xs font-semibold transition-colors min-h-[40px] <%= isEnrolled ? 'border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-rose-500/10 hover:border-rose-500/40 hover:text-rose-300' : 'bg-blue-600 text-white hover:bg-blue-500' %>"
+            >
+              <%= isEnrolled ? 'Enrolled · Leave' : 'Enroll in Program' %>
+            </button>
+            <button
+              type="button"
+              data-view-sport-roster="<%= sport.id %>"
+              class="rounded-lg border border-slate-400/20 px-4 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors min-h-[40px] whitespace-nowrap"
+            >
+              View Roster
+            </button>
+          </div>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+
+  <p id="sports-empty-state" class="hidden mt-10 text-center text-sm text-slate-400 py-12 surface-card rounded-xl">
+    No sports match your current filter. Try clearing the search query or selecting All categories.
+  </p>
+</main>
+
+<!-- Sport Roster Drawer / Modal -->
+<div id="sport-roster-modal" role="dialog" aria-modal="true" aria-labelledby="roster-modal-title" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4">
+  <div class="w-full max-w-xl rounded-xl surface-elevated p-6 max-h-[85vh] flex flex-col">
+    <div class="flex items-start justify-between gap-4 pb-4 border-b border-slate-400/15">
+      <div>
+        <p id="roster-modal-meta" class="text-xs text-blue-400 font-medium"></p>
+        <h3 id="roster-modal-title" class="font-display text-3xl font-bold text-white mt-0.5">Program Roster</h3>
+      </div>
+      <button type="button" data-close-roster-modal class="rounded-lg border border-slate-400/20 px-3 py-1.5 text-xs text-slate-300 hover:text-white">Close</button>
+    </div>
+    <div id="roster-modal-body" class="mt-4 overflow-y-auto space-y-2 text-sm"></div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/modal-and-toast') %>

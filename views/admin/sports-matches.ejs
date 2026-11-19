@@ -1,0 +1,321 @@
+<%- include('../partials/head') %>
+<%- include('../partials/workspace-shell-start') %>
+
+<div class="space-y-6">
+  <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+    <div>
+      <p class="text-xs font-medium text-blue-400">Program &amp; Fixture Control</p>
+      <h1 class="font-display text-4xl font-bold text-white mt-1">Manage Sports &amp; Matches</h1>
+      <p class="text-sm text-slate-300 mt-1">Create varsity sports, schedule new matches, and record final scores to update standings.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <button type="button" data-open-sport-modal class="rounded-lg border border-slate-400/20 px-4 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors whitespace-nowrap min-h-[40px]">
+        + New Sport Program
+      </button>
+      <button type="button" data-open-match-modal class="rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500 transition-colors whitespace-nowrap min-h-[40px]">
+        + Schedule Match
+      </button>
+    </div>
+  </div>
+
+  <!-- Segmented Tabs -->
+  <div role="tablist" aria-label="Manage sections" class="inline-flex items-center gap-1 p-1 rounded-lg bg-[#0B1324] border border-slate-400/15">
+    <button type="button" data-admin-sm-tab="matches" class="px-4 py-2 text-xs font-medium rounded-md bg-blue-600 text-white transition-colors whitespace-nowrap">Fixtures &amp; Results</button>
+    <button type="button" data-admin-sm-tab="sports" class="px-4 py-2 text-xs font-medium rounded-md text-slate-300 hover:text-white transition-colors whitespace-nowrap">Sports Programs (<%= sports.length %>)</button>
+  </div>
+
+  <!-- Matches & Fixtures Management Panel -->
+  <section id="admin-panel-matches" class="space-y-6">
+    <div class="surface-card rounded-xl overflow-x-auto">
+      <div class="px-6 py-4 border-b border-slate-400/15 flex items-center justify-between">
+        <h2 class="font-display text-2xl font-bold text-white">Upcoming &amp; Scheduled Fixtures (<%= fixtures.length %>)</h2>
+      </div>
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-400/15 text-xs text-slate-400">
+          <tr>
+            <th class="py-3 px-5 font-medium">Matchup</th>
+            <th class="py-3 px-5 font-medium">Sport</th>
+            <th class="py-3 px-5 font-medium">Date &amp; Time</th>
+            <th class="py-3 px-5 font-medium">Venue</th>
+            <th class="py-3 px-5 font-medium">Status</th>
+            <th class="py-3 px-5 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-400/10">
+          <% if (fixtures.length === 0) { %>
+            <tr><td colspan="6" class="py-8 px-5 text-center text-slate-400">No upcoming fixtures scheduled.</td></tr>
+          <% } %>
+          <% fixtures.forEach((m) => { %>
+            <tr class="hover:bg-slate-800/35 transition-colors">
+              <td class="py-3.5 px-5 font-semibold text-white">
+                <%= m.homeTeam %> vs. <%= m.awayTeam %>
+                <p class="text-xs font-normal text-slate-400"><%= m.round %></p>
+              </td>
+              <td class="py-3.5 px-5 text-slate-300"><%= m.sportName %></td>
+              <td class="py-3.5 px-5 font-mono text-xs tabular-nums text-slate-200"><%= m.date %> · <%= m.time %></td>
+              <td class="py-3.5 px-5 text-slate-300"><%= m.venue %></td>
+              <td class="py-3.5 px-5 text-xs font-medium <%= m.status === 'Postponed' ? 'text-amber-400' : 'text-blue-400' %>"><%= m.status %></td>
+              <td class="py-3.5 px-5 text-right whitespace-nowrap space-x-2">
+                <button
+                  type="button"
+                  data-record-result='<%- JSON.stringify({ id: m.id, title: m.homeTeam + " vs. " + m.awayTeam, homeTeam: m.homeTeam, awayTeam: m.awayTeam }) %>'
+                  class="rounded-md bg-blue-600/20 border border-blue-500/40 px-3 py-1.5 text-xs font-semibold text-blue-300 hover:bg-blue-600 hover:text-white transition-colors"
+                >
+                  Record Result
+                </button>
+                <button
+                  type="button"
+                  data-delete-match="<%= m.id %>"
+                  data-match-title="<%= m.title %>"
+                  class="rounded-md border border-rose-500/30 px-3 py-1.5 text-xs font-medium text-rose-300 hover:bg-rose-600/20 transition-colors"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="surface-card rounded-xl overflow-x-auto">
+      <div class="px-6 py-4 border-b border-slate-400/15">
+        <h2 class="font-display text-2xl font-bold text-white">Completed Match Results (<%= results.length %>)</h2>
+      </div>
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-400/15 text-xs text-slate-400">
+          <tr>
+            <th class="py-3 px-5 font-medium">Matchup</th>
+            <th class="py-3 px-5 font-medium">Sport</th>
+            <th class="py-3 px-5 font-medium">Date</th>
+            <th class="py-3 px-5 font-medium">Top Performer</th>
+            <th class="py-3 px-5 font-medium text-right">Final Score</th>
+            <th class="py-3 px-5 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-400/10">
+          <% results.forEach((m) => { %>
+            <tr class="hover:bg-slate-800/35 transition-colors">
+              <td class="py-3.5 px-5 font-semibold text-white"><%= m.homeTeam %> vs. <%= m.awayTeam %></td>
+              <td class="py-3.5 px-5 text-slate-300"><%= m.sportName %></td>
+              <td class="py-3.5 px-5 font-mono text-xs tabular-nums text-slate-400"><%= m.date %></td>
+              <td class="py-3.5 px-5 text-slate-300"><%= m.mvp %></td>
+              <td class="py-3.5 px-5 text-right font-mono font-bold tabular-nums text-white"><%= m.homeScore %> – <%= m.awayScore %></td>
+              <td class="py-3.5 px-5 text-right whitespace-nowrap">
+                <button
+                  type="button"
+                  data-delete-match="<%= m.id %>"
+                  data-match-title="<%= m.title %>"
+                  class="rounded-md border border-rose-500/30 px-3 py-1.5 text-xs font-medium text-rose-300 hover:bg-rose-600/20 transition-colors"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Sports Programs Panel -->
+  <section id="admin-panel-sports" class="hidden">
+    <div class="surface-card rounded-xl overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-400/15 text-xs text-slate-400">
+          <tr>
+            <th class="py-3.5 px-5 font-medium">Program</th>
+            <th class="py-3.5 px-5 font-medium">Category</th>
+            <th class="py-3.5 px-5 font-medium">Coach &amp; Venue</th>
+            <th class="py-3.5 px-5 font-medium text-right">Roster</th>
+            <th class="py-3.5 px-5 font-medium">Status</th>
+            <th class="py-3.5 px-5 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-400/10">
+          <% sports.forEach((sp) => { %>
+            <tr class="hover:bg-slate-800/35 transition-colors">
+              <td class="py-3.5 px-5">
+                <p class="font-semibold text-white"><%= sp.name %></p>
+                <p class="text-xs text-slate-400"><%= sp.season %> · <%= sp.schedule %></p>
+              </td>
+              <td class="py-3.5 px-5 text-slate-300"><%= sp.category %></td>
+              <td class="py-3.5 px-5 text-slate-300">
+                <%= sp.coach %>
+                <p class="text-xs text-slate-400"><%= sp.venue %></p>
+              </td>
+              <td class="py-3.5 px-5 text-right font-mono tabular-nums text-slate-200"><%= sp.rosterCount %> / <%= sp.maxRoster %></td>
+              <td class="py-3.5 px-5 text-xs font-medium <%= sp.status === 'Active' ? 'text-emerald-400' : 'text-amber-400' %>"><%= sp.status %></td>
+              <td class="py-3.5 px-5 text-right whitespace-nowrap space-x-2">
+                <button
+                  type="button"
+                  data-toggle-sport-status="<%= sp.id %>"
+                  data-next-status="<%= sp.status === 'Active' ? 'Off-Season' : 'Active' %>"
+                  class="rounded-md border border-slate-400/20 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors"
+                >
+                  Set <%= sp.status === 'Active' ? 'Off-Season' : 'Active' %>
+                </button>
+                <button
+                  type="button"
+                  data-delete-sport="<%= sp.id %>"
+                  data-sport-name="<%= sp.name %>"
+                  class="rounded-md border border-rose-500/30 px-3 py-1.5 text-xs font-medium text-rose-300 hover:bg-rose-600/20 transition-colors"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<!-- Add Sport Modal -->
+<div id="admin-sport-modal" role="dialog" aria-modal="true" aria-labelledby="sport-modal-title" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4">
+  <div class="w-full max-w-lg rounded-xl surface-elevated p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-400/15">
+      <h2 id="sport-modal-title" class="font-display text-2xl font-bold text-white">Create Varsity Sport</h2>
+      <button type="button" data-close-sport-modal class="text-xs text-slate-400 hover:text-white">Close</button>
+    </div>
+    <form id="admin-sport-form" class="mt-5 space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="sp-name" class="block text-xs font-medium text-slate-300 mb-1">Sport Name</label>
+          <input id="sp-name" name="name" type="text" required placeholder="e.g., Varsity Volleyball" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="sp-category" class="block text-xs font-medium text-slate-300 mb-1">Category</label>
+          <select id="sp-category" name="category" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500">
+            <option value="Team Court">Team Court</option>
+            <option value="Field & Pitch">Field &amp; Pitch</option>
+            <option value="Track & Field">Track &amp; Field</option>
+            <option value="Aquatics">Aquatics</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="sp-coach" class="block text-xs font-medium text-slate-300 mb-1">Head Coach</label>
+          <input id="sp-coach" name="coach" type="text" required placeholder="Coach Name" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="sp-venue" class="block text-xs font-medium text-slate-300 mb-1">Facility / Venue</label>
+          <input id="sp-venue" name="venue" type="text" required placeholder="Home Complex" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="sp-season" class="block text-xs font-medium text-slate-300 mb-1">Season</label>
+          <input id="sp-season" name="season" type="text" value="Spring 2027" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="sp-roster" class="block text-xs font-medium text-slate-300 mb-1">Max Roster</label>
+          <input id="sp-roster" name="maxRoster" type="number" min="4" max="60" value="20" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white font-mono focus:border-blue-500" />
+        </div>
+      </div>
+      <div>
+        <label for="sp-summary" class="block text-xs font-medium text-slate-300 mb-1">Program Description</label>
+        <textarea id="sp-summary" name="summary" rows="2" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500"></textarea>
+      </div>
+      <div class="pt-2 flex items-center justify-end gap-3">
+        <button type="button" data-close-sport-modal class="rounded-lg border border-slate-400/20 px-4 py-2 text-xs font-medium text-slate-300 hover:text-white">Cancel</button>
+        <button type="submit" class="rounded-lg bg-blue-600 px-5 py-2 text-xs font-semibold text-white hover:bg-blue-500">Create Sport</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Schedule Match Modal -->
+<div id="admin-match-modal" role="dialog" aria-modal="true" aria-labelledby="match-modal-title" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4">
+  <div class="w-full max-w-lg rounded-xl surface-elevated p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-400/15">
+      <h2 id="match-modal-title" class="font-display text-2xl font-bold text-white">Schedule New Match</h2>
+      <button type="button" data-close-match-modal class="text-xs text-slate-400 hover:text-white">Close</button>
+    </div>
+    <form id="admin-match-form" class="mt-5 space-y-4">
+      <div>
+        <label for="mt-sport" class="block text-xs font-medium text-slate-300 mb-1">Sport Program</label>
+        <select id="mt-sport" name="sportId" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500">
+          <% sports.forEach((sp) => { %>
+            <option value="<%= sp.id %>"><%= sp.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="mt-home" class="block text-xs font-medium text-slate-300 mb-1">Home Squad</label>
+          <input id="mt-home" name="homeTeam" type="text" required value="Track University" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="mt-away" class="block text-xs font-medium text-slate-300 mb-1">Opponent</label>
+          <input id="mt-away" name="awayTeam" type="text" required placeholder="e.g., Pacific State" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="mt-date" class="block text-xs font-medium text-slate-300 mb-1">Date</label>
+          <input id="mt-date" name="date" type="date" required value="2026-12-03" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="mt-time" class="block text-xs font-medium text-slate-300 mb-1">Start Time</label>
+          <input id="mt-time" name="time" type="time" required value="19:00" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="mt-venue" class="block text-xs font-medium text-slate-300 mb-1">Venue</label>
+          <input id="mt-venue" name="venue" type="text" required value="Northgate Arena" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label for="mt-round" class="block text-xs font-medium text-slate-300 mb-1">Round / Event</label>
+          <input id="mt-round" name="round" type="text" value="Conference Match" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+        </div>
+      </div>
+      <div class="pt-2 flex items-center justify-end gap-3">
+        <button type="button" data-close-match-modal class="rounded-lg border border-slate-400/20 px-4 py-2 text-xs font-medium text-slate-300 hover:text-white">Cancel</button>
+        <button type="submit" class="rounded-lg bg-blue-600 px-5 py-2 text-xs font-semibold text-white hover:bg-blue-500">Schedule Fixture</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Record Match Result Modal -->
+<div id="admin-result-modal" role="dialog" aria-modal="true" aria-labelledby="result-modal-title" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4">
+  <div class="w-full max-w-md rounded-xl surface-elevated p-6">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-400/15">
+      <h2 id="result-modal-title" class="font-display text-2xl font-bold text-white">Record Final Result</h2>
+      <button type="button" data-close-result-modal class="text-xs text-slate-400 hover:text-white">Close</button>
+    </div>
+    <form id="admin-result-form" class="mt-5 space-y-4">
+      <input type="hidden" id="res-match-id" name="matchId" />
+      <p id="res-match-label" class="text-sm font-medium text-blue-400"></p>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label id="res-home-label" for="res-home-score" class="block text-xs font-medium text-slate-300 mb-1">Home Score</label>
+          <input id="res-home-score" name="homeScore" type="number" min="0" required class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm font-mono text-white focus:border-blue-500" />
+        </div>
+        <div>
+          <label id="res-away-label" for="res-away-score" class="block text-xs font-medium text-slate-300 mb-1">Away Score</label>
+          <input id="res-away-score" name="awayScore" type="number" min="0" required class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm font-mono text-white focus:border-blue-500" />
+        </div>
+      </div>
+      <div>
+        <label for="res-mvp" class="block text-xs font-medium text-slate-300 mb-1">Top Performer / MVP</label>
+        <input id="res-mvp" name="mvp" type="text" required placeholder="e.g., Jordan Mercer (24 PTS)" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500" />
+      </div>
+      <div>
+        <label for="res-notes" class="block text-xs font-medium text-slate-300 mb-1">Match Summary Note</label>
+        <textarea id="res-notes" name="notes" rows="2" placeholder="Key tactical highlights" class="w-full rounded-lg border border-slate-400/20 bg-[#060B16] px-3 py-2 text-sm text-white focus:border-blue-500"></textarea>
+      </div>
+      <div class="pt-2 flex items-center justify-end gap-3">
+        <button type="button" data-close-result-modal class="rounded-lg border border-slate-400/20 px-4 py-2 text-xs font-medium text-slate-300 hover:text-white">Cancel</button>
+        <button type="submit" class="rounded-lg bg-blue-600 px-5 py-2 text-xs font-semibold text-white hover:bg-blue-500">Publish Result</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/workspace-shell-end') %>
+<%- include('../partials/modal-and-toast') %>

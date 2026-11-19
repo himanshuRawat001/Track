@@ -1,0 +1,83 @@
+<%- include('../partials/head') %>
+<%- include('../partials/public-header') %>
+
+<main class="mx-auto max-w-[1360px] px-6 py-10 lg:py-12">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-400/15">
+    <div>
+      <p class="text-xs font-medium text-blue-400">Official Season Calendar</p>
+      <h1 class="font-display text-4xl lg:text-5xl font-bold text-white mt-1">Matches &amp; Fixtures</h1>
+      <p class="text-sm text-slate-300 mt-2 max-w-2xl">
+        Track upcoming collegiate matchups, tournament heats, venue assignments, and schedule adjustments across all varsity programs.
+      </p>
+    </div>
+    <a href="/results" class="rounded-lg border border-slate-400/20 px-4 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors whitespace-nowrap self-start md:self-auto">
+      View Completed Results →
+    </a>
+  </div>
+
+  <!-- Filter Controls -->
+  <div class="mt-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="flex flex-wrap items-center gap-3">
+      <div role="tablist" aria-label="Fixture status" class="flex items-center gap-1 p-1 rounded-lg bg-[#0B1324] border border-slate-400/15">
+        <button type="button" data-fixture-status="all" class="px-3.5 py-2 text-xs font-medium rounded-md bg-blue-600 text-white transition-colors whitespace-nowrap">All Fixtures</button>
+        <button type="button" data-fixture-status="Scheduled" class="px-3.5 py-2 text-xs font-medium rounded-md text-slate-300 hover:text-white transition-colors whitespace-nowrap">Scheduled</button>
+        <button type="button" data-fixture-status="Postponed" class="px-3.5 py-2 text-xs font-medium rounded-md text-slate-300 hover:text-white transition-colors whitespace-nowrap">Postponed</button>
+      </div>
+
+      <label for="fixture-sport-filter" class="sr-only">Filter by sport</label>
+      <select id="fixture-sport-filter" class="rounded-lg border border-slate-400/20 bg-[#0B1324] px-3.5 py-2 text-xs font-medium text-white focus:border-blue-500 min-h-[40px]">
+        <option value="all">All Sports</option>
+        <% sports.forEach((sp) => { %>
+          <option value="<%= sp.id %>"><%= sp.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="w-full lg:w-72">
+      <label for="fixture-search" class="sr-only">Search fixtures</label>
+      <input id="fixture-search" type="search" placeholder="Search team, round, or venue..." class="w-full rounded-lg border border-slate-400/20 bg-[#0B1324] px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-blue-500" />
+    </div>
+  </div>
+
+  <!-- Fixtures List -->
+  <div id="fixtures-list" class="mt-8 space-y-4">
+    <% fixtures.forEach((match) => { %>
+      <article
+        class="surface-card rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6"
+        data-fixture-row
+        data-sport-id="<%= match.sportId %>"
+        data-status="<%= match.status %>"
+        data-search="<%= (match.title + ' ' + match.sportName + ' ' + match.venue + ' ' + match.round).toLowerCase() %>"
+      >
+        <div class="space-y-1.5 min-w-0">
+          <p class="text-xs text-slate-400">
+            <span class="text-blue-400 font-medium"><%= match.sportName %></span>
+            <span aria-hidden="true"> · </span>
+            <span><%= match.round %></span>
+            <span aria-hidden="true"> · </span>
+            <span class="<%= match.status === 'Postponed' ? 'text-amber-400 font-medium' : 'text-emerald-400 font-medium' %>"><%= match.status %></span>
+          </p>
+          <h2 class="font-display text-2xl lg:text-3xl font-bold text-white truncate"><%= match.homeTeam %> vs. <%= match.awayTeam %></h2>
+          <p class="text-xs text-slate-400">Venue: <span class="text-slate-200"><%= match.venue %></span> · <%= match.notes %></p>
+        </div>
+
+        <div class="flex items-center justify-between md:justify-end gap-6 shrink-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-400/15">
+          <div class="md:text-right tabular-nums">
+            <p class="font-mono text-base font-semibold text-white"><%= match.date %></p>
+            <p class="font-mono text-xs text-slate-400 mt-0.5"><%= match.time %> Local</p>
+          </div>
+          <a href="/admin/sports-matches" class="rounded-lg border border-slate-400/20 px-4 py-2 text-xs font-medium text-slate-200 hover:bg-slate-800/60 transition-colors whitespace-nowrap">
+            Record Score
+          </a>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+
+  <p id="fixtures-empty-state" class="hidden mt-8 text-center text-sm text-slate-400 py-12 surface-card rounded-xl">
+    No fixtures match your selected sport or status filter.
+  </p>
+</main>
+
+<%- include('../partials/footer') %>
+<%- include('../partials/modal-and-toast') %>
